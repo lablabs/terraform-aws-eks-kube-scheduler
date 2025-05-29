@@ -5,3 +5,15 @@ variable "enabled" {
   description = "Set to false to prevent the module from creating any resources."
   nullable    = false
 }
+
+variable "manifest_target_revision" {
+  type        = string
+  default     = "0.1.0"
+  description = "Manifest target revision to deploy from"
+}
+
+variable "manifest_target_path" {
+  type        = string
+  default     = "helm/kubeScheduler"
+  description = "Manifest target path in projects repository"
+}

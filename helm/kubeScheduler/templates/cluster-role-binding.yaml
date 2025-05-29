@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "custom-scheduler.fullname" . }}
+  labels:
+    app: {{ include "custom-scheduler.name" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:kube-scheduler
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "custom-scheduler.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}

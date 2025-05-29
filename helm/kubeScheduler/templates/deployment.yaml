@@ -14,6 +14,7 @@ spec:
       labels:
         app: {{ include "custom-scheduler.name" . }}
     spec:
+      serviceAccountName: {{ include "custom-scheduler.serviceAccountName" . }}
       containers:
         - name: kube-scheduler
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -27,3 +28,6 @@ spec:
         - name: config
           configMap:
             name: {{ include "custom-scheduler.fullname" . }}-config
+{{- if .Values.specs }}
+{{ toYaml .Values.specs | indent 6 }}
+{{- end }}
