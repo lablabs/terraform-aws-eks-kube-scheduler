@@ -1,0 +1,41 @@
+schedulerName: custom-scheduler
+
+image:
+  repository: registry.k8s.io/kube-scheduler
+  tag: v1.28.0
+
+replicaCount: 1
+
+leaderElection:
+  leaderElect: true
+  leaseDuration: "15s"
+  renewDeadline: "10s"
+  retryPeriod: "2s"
+
+plugins:
+  queueSort:
+    enabled:
+      - PrioritySort
+  preFilter:
+    enabled:
+      - NodeResourcesFit
+    disabled:
+      - PodTopologySpread
+  filter:
+    enabled:
+      - NodeResourcesFit
+      - PodTopologySpread
+    disabled: []
+  score:
+    enabled:
+      - NodeResourcesFit
+      - PodTopologySpread
+    disabled: []
+
+pluginConfig:
+  - name: NodeResourcesFit
+    args:
+      ignoredResourceGroups:
+        - "example.com"
+      scoringStrategy:
+        type: MostAllocated

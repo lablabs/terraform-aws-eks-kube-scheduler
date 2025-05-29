@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "custom-scheduler.fullname" . }}
+  labels:
+    app: {{ include "custom-scheduler.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ include "custom-scheduler.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "custom-scheduler.name" . }}
+    spec:
+      containers:
+        - name: kube-scheduler
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          args:
+            - --config=/etc/kube-scheduler/kube-scheduler-config.yaml
+          volumeMounts:
+            - name: config
+              mountPath: /etc/kube-scheduler/
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "custom-scheduler.fullname" . }}-config
