@@ -45,21 +45,19 @@ pluginConfig:
         type: MostAllocated
 
 # Add any extra fields to extend the deployment spec.template.spec here
-specs: {}
-# Example:
-# specs:
-#   containers:
-#     - name: kube-scheduler
-#       resources:
-#         requests:
-#           cpu: 100m
-#           memory: 256Mi
-#         limits:
-#           cpu: 500m
-#           memory: 512Mi
-#       livenessProbe:
-#         httpGet:
-#           path: /healthz
-#           port: 10251
-#         initialDelaySeconds: 10
-#         periodSeconds: 10
+specs:
+  containers:
+    - name: kube-scheduler
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 10251
+        initialDelaySeconds: 10
+        periodSeconds: 10
