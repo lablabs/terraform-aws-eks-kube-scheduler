@@ -19,6 +19,17 @@ Create a default fully qualified app name.
 {{- end }}
 
 {{/*
+Service account name helper.
+*/}}
+{{- define "custom-scheduler.serviceAccountName" -}}
+{{- if .Values.serviceAccount.name }}
+{{- .Values.serviceAccount.name }}
+{{- else }}
+{{- include "custom-scheduler.fullname" . }}
+{{- end }}
+{{- end }}
+
+{{/*
 Common labels
 */}}
 {{- define "custom-scheduler.labels" -}}

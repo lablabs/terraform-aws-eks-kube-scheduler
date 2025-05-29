@@ -1,10 +1,15 @@
 schedulerName: custom-scheduler
 
 image:
-  repository: registry.k8s.io/kube-scheduler
-  tag: v1.28.0
+  repository: public.ecr.aws/eks-distro/kubernetes/kube-scheduler
+  tag: v1.30.11-eks-1-30-latest
 
 replicaCount: 1
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
 
 leaderElection:
   leaderElect: true
@@ -39,3 +44,21 @@ pluginConfig:
         - "example.com"
       scoringStrategy:
         type: MostAllocated
+
+# Add any extra fields to extend the deployment spec.template.spec here
+specs:
+  containers:
+    - name: kube-scheduler
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 10251
+        initialDelaySeconds: 10
+        periodSeconds: 10

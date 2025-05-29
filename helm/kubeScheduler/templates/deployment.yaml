@@ -2,18 +2,54 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "custom-scheduler.fullname" . }}
+  namespace: {{ include "custom-scheduler.namespace" . }}
   labels:
     app: {{ include "custom-scheduler.name" . }}
+    {{- include "custom-scheduler.labels" . | nindent 4 }}
+  {{- with .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.replicaCount | default 1 }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
       app: {{ include "custom-scheduler.name" . }}
+      {{- include "custom-scheduler.labels" . | nindent 6 }}
   template:
     metadata:
       labels:
         app: {{ include "custom-scheduler.name" . }}
+        {{- include "custom-scheduler.labels" . | nindent 8 }}
     spec:
+      serviceAccountName: {{ include ".Values.serviceAccount.name" . }}
+      nodeSelector:
+        kubernetes.io/os: linux
+        {{- with .Values.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- with default .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+        {{- with .Values.tolerations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.controller.topologySpreadConstraints}}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controller.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.controller.initContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: kube-scheduler
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -27,3 +63,6 @@ spec:
         - name: config
           configMap:
             name: {{ include "custom-scheduler.fullname" . }}-config
+{{- if .Values.specs }}
+{{ toYaml .Values.specs | indent 6 }}
+{{- end }}
