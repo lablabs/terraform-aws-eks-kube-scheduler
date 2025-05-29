@@ -4,7 +4,8 @@ metadata:
   name: {{ include "custom-scheduler.fullname" . }}-config
   namespace: {{ include "custom-scheduler.namespace" . }}
   labels:
-    app: {{ include "custom-scheduler.name" . }}
+      app: {{ include "custom-scheduler.name" . }}
+    {{- include "custom-scheduler.labels" . | nindent 4 }}
 data:
   kube-scheduler-config.yaml: |
     apiVersion: kubescheduler.config.k8s.io/v1
