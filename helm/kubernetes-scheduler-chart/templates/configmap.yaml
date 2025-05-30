@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "custom-scheduler.fullname" . }}
+  labels:
+    {{- include "custom-scheduler.labels" . | nindent 4 }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  scheduler-config.yaml: |
+    apiVersion: {{ .Values.config.pluginApiVersion }}
+    kind: KubeSchedulerConfiguration
+    leaderElection:
+      leaderElect: {{ .Values.config.leaderElect }}
+      resourceName: {{ .Values.config.schedulerName }}
+      resourceNamespace: {{ include "custom-scheduler.namespace" . }}
+    profiles:
+    - schedulerName: {{ .Values.config.schedulerName }}
+      pluginConfig: {{ toYaml .Values.config.pluginConfig | nindent 6 }}
+      plugins: {{ toYaml .Values.config.plugins | nindent 8 }}

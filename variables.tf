@@ -8,12 +8,12 @@ variable "enabled" {
 
 variable "manifest_target_revision" {
   type        = string
-  default     = "0.1.0"
+  default     = "0.3.0"
   description = "Manifest target revision to deploy from"
 }
 
 variable "manifest_target_path" {
   type        = string
-  default     = "helm/kubeScheduler"
+  default     = "helm/kubernetes-scheduler"
   description = "Manifest target path in projects repository"
 }
