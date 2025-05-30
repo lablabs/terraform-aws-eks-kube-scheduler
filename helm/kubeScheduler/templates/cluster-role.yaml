@@ -1,3 +1,0 @@
-# This file is optional, included for extensibility.
-# By default, we use 'system:kube-scheduler' ClusterRole via ClusterRoleBinding.
-# You may copy the rules from upstream Kubernetes if you want to define a custom ClusterRole.

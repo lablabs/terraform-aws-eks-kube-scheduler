@@ -1,0 +1,49 @@
+image:
+  repository: registry.k8s.io/kube-scheduler
+  pullPolicy: IfNotPresent
+  tag: ""
+
+replicaCount: 1
+
+revisionHistoryLimit: 10
+
+logLevel: 5
+resources: {}
+#  limits:
+#    cpu: 100m
+#    memory: 128Mi
+#  requests:
+#    cpu: 100m
+#    memory: 128Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+config:
+  schedulerName: custom-scheduler-mostallocated
+  leaderElect: false
+  pluginApiVersion: kubescheduler.config.k8s.io/v1
+  pluginConfig:
+  - args:
+      scoringStrategy:
+        resources:
+        - name: cpu
+          weight: 1
+        - name: memory
+          weight: 1
+        type: MostAllocated
+    name: NodeResourcesFit
+
+  plugins:
+    score:
+      enabled:
+      - name: NodeResourcesFit
+        weight: 1
+
+serviceAccount:
+  create: true
+
+rbac:
+  create: true
+  extraClusterRoleRules: []
