@@ -11,5 +11,5 @@ keywords:
 sources:
   - https://github.com/lablabs/terraform-aws-eks-kube-scheduler/blob/master/helm/kubeScheduler/values.yaml
 maintainers:
-  - name: dojci
-    email: martin.dojcak@lablabs.io
+  - name: lablabs-tech-team
+    email: tech@lablabs.io
