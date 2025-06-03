@@ -8,7 +8,7 @@ locals {
         tag = "v1.30.13" # please review versions for kube-scheduler: https://github.com/kubernetes/kube-scheduler/tags?after=kubernetes-1.33.0
       }
       schedulerName = "custom-scheduler"
-      replicaCount  = 2
+      replicaCount  = 2 # HA Setup
       resources = {
         requests = {
           cpu    = "100m"
@@ -19,40 +19,43 @@ locals {
         create = true
         name   = "custom-kube-scheduler-sa"
       }
-      leaderElection = {
-        leaderElect   = true
-        leaseDuration = "15s"
-        renewDeadline = "10s"
-        retryPeriod   = "2s"
-      }
-      plugins = {
-        queueSort = {
-          enabled = ["PrioritySort"]
+      # Config part is related to KubeSchedulerConfig values to create custom kube Scheduler
+      config = {
+        leaderElection = {
+          leaderElect   = true
+          leaseDuration = "15s"
+          renewDeadline = "10s"
+          retryPeriod   = "2s"
         }
-        preFilter = {
-          enabled  = ["NodeResourcesFit"]
-          disabled = ["PodTopologySpread"]
-        }
-        filter = {
-          enabled  = ["NodeResourcesFit", "PodTopologySpread"]
-          disabled = []
-        }
-        score = {
-          enabled  = ["NodeResourcesFit", "PodTopologySpread"]
-          disabled = []
-        }
-      }
-      pluginConfig = [
-        {
-          name = "NodeResourcesFit"
-          args = {
-            ignoredResourceGroups = ["example.com"]
-            scoringStrategy = {
-              type = "MostAllocated"
-            }
+        plugins = {
+          queueSort = {
+            enabled = ["PrioritySort"]
+          }
+          preFilter = {
+            enabled  = ["NodeResourcesFit"]
+            disabled = ["PodTopologySpread"]
+          }
+          filter = {
+            enabled  = ["NodeResourcesFit", "PodTopologySpread"]
+            disabled = []
+          }
+          score = {
+            enabled  = ["NodeResourcesFit", "PodTopologySpread"]
+            disabled = []
           }
         }
-      ]
+        pluginConfig = [
+          {
+            name = "NodeResourcesFit"
+            args = {
+              ignoredResourceGroups = ["example.com"]
+              scoringStrategy = {
+                type = "MostAllocated"
+              }
+            }
+          }
+        ]
+      }
     }
   }
 }
