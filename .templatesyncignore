@@ -7,4 +7,6 @@ README.md
 .github/workflows/renovate.yaml
 renovate.json
 addon-oidc.tf
-variable-addon-oidc.tf
+addon-irsa.tf
+variables-addon-oidc.tf
+variables-addon-irsa.tf
