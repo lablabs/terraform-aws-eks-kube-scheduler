@@ -4,8 +4,17 @@ locals {
     namespace = "kube-system"
     version   = "1.0.0"
     values = {
+      image = {
+        tag = "v1.30.13" # please review versions for kube-scheduler: https://github.com/kubernetes/kube-scheduler/tags?after=kubernetes-1.33.0
+      }
       schedulerName = "custom-scheduler"
       replicaCount  = 2
+      resources = {
+        requests = {
+          cpu    = "100m"
+          memory = "128Mi"
+        }
+      }
       serviceAccount = {
         create = true
         name   = "custom-kube-scheduler-sa"

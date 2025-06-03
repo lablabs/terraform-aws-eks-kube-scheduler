@@ -35,10 +35,14 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ include "custom-scheduler.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "v%s" .Chart.AppVersion) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
           command:
           - /usr/local/bin/kube-scheduler
           - --config=/etc/kubernetes/scheduler-config.yaml

@@ -1,3 +1,14 @@
+# Default values for aws-service-quotas-exporter.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+nameOverride: ""
+fullnameOverride: ""
+
+namespaceOverride: ""
+
+revisionHistoryLimit: 10
+logLevel: INFO
+
 image:
   repository: registry.k8s.io/kube-scheduler
   pullPolicy: IfNotPresent
@@ -5,9 +16,24 @@ image:
 
 replicaCount: 1
 
-revisionHistoryLimit: 10
+serviceAccount:
+  # Specify, whatever a service account should be created
+  create: true
+  # Service account name, or use from variables, serviceAccountName
+  name: ""
 
-logLevel: 5
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+   # runAsNonRoot: true
+   # capabilities:
+   #   drop:
+   #     - ALL
+
 resources: {}
 #  limits:
 #    cpu: 100m
@@ -40,9 +66,6 @@ config:
       enabled:
       - name: NodeResourcesFit
         weight: 1
-
-serviceAccount:
-  create: true
 
 rbac:
   create: true
