@@ -7,7 +7,7 @@ fullnameOverride: ""
 namespaceOverride: ""
 
 revisionHistoryLimit: 10
-logLevel: INFO
+logLevel: 3 # INFO, must be numeric as scheduler needs numeric value, 0-Fatal, 1-Error, 2-Warn, 3-Info, 4-Debug, 5-Trace
 
 image:
   repository: registry.k8s.io/kube-scheduler
@@ -48,6 +48,26 @@ resources:
 #    cpu: 100m
 #    memory: 128Mi
 
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 10259
+    scheme: HTTPS  # Use HTTPS if you have TLS enabled, HTTP otherwise
+  # initialDelaySeconds: 10
+  # timeoutSeconds: 15
+  # failureThreshold: 8
+  # periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: 10259
+    scheme: HTTPS  # Use HTTPS if scheduler uses TLS, otherwise HTTP
+  # initialDelaySeconds: 5
+  # timeoutSeconds: 5
+  # periodSeconds: 10
+  # failureThreshold: 3
+
 nodeSelector: {}
 tolerations: []
 affinity: {}
@@ -57,17 +77,16 @@ config:
   # Use create false if you want to use existing configMap
   create: true
   # Name of the new or existing ConfigMap
-  name: ""
   schedulerName: custom-scheduler
   kubeSchedulerConfig: |-
     apiVersion: kubescheduler.config.k8s.io/v1
     kind: KubeSchedulerConfiguration
     leaderElection:
       leaderElect: false
-      resourceName: custom-scheduler-mostallocated
+      resourceName: custom-scheduler
       resourceNamespace: kube-system
     profiles:
-    - schedulerName: custom-scheduler-mostallocated
+    - schedulerName: custom-scheduler
       pluginConfig:
       - name: NodeResourcesFit
         args:
@@ -96,6 +115,7 @@ config:
             type: MostAllocated
         name: NodeResourcesFit
 
+# Define if custom cluster role & cluster role binding is needed
 rbac:
   create: true
   extraClusterRoleRules: []

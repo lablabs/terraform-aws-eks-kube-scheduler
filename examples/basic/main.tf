@@ -7,13 +7,18 @@ locals {
       image = {
         tag = "v1.30.13" # please review versions for kube-scheduler: https://github.com/kubernetes/kube-scheduler/tags?after=kubernetes-1.33.0
       }
-      schedulerName = "custom-scheduler"
-      replicaCount  = 2 # HA Setup
+      replicaCount = 2 # HA Setup, it enables by default --leader-elect=true
       resources = {
         requests = {
           cpu    = "100m"
           memory = "128Mi"
         }
+      }
+      podLabels = {
+        app = "KubeSchedulerPod"
+      }
+      securityContext = {
+        runAsRoot = true
       }
       serviceAccount = {
         create = true
@@ -21,40 +26,45 @@ locals {
       }
       # Config part is related to KubeSchedulerConfig values to create custom kube Scheduler
       config = {
-        leaderElection = {
-          leaderElect   = true
-          leaseDuration = "15s"
-          renewDeadline = "10s"
-          retryPeriod   = "2s"
-        }
-        plugins = {
-          queueSort = {
-            enabled = ["PrioritySort"]
-          }
-          preFilter = {
-            enabled  = ["NodeResourcesFit"]
-            disabled = ["PodTopologySpread"]
-          }
-          filter = {
-            enabled  = ["NodeResourcesFit", "PodTopologySpread"]
-            disabled = []
-          }
-          score = {
-            enabled  = ["NodeResourcesFit", "PodTopologySpread"]
-            disabled = []
-          }
-        }
-        pluginConfig = [
-          {
-            name = "NodeResourcesFit"
-            args = {
-              ignoredResourceGroups = ["example.com"]
-              scoringStrategy = {
-                type = "MostAllocated"
-              }
-            }
-          }
-        ]
+        create              = true
+        schedulerName       = "custom-kube-scheduler"
+        kubeSchedulerConfig = <<-EOT
+          apiVersion: kubescheduler.config.k8s.io/v1
+          kind: KubeSchedulerConfiguration
+          leaderElection:
+            leaderElect: false
+            resourceName: custom-scheduler
+            resourceNamespace: kube-system
+          profiles:
+          - schedulerName: custom-scheduler
+            pluginConfig:
+            - name: NodeResourcesFit
+              args:
+                scoringStrategy:
+                  resources:
+                  - name: cpu
+                    weight: 1
+                  - name: memory
+                    weight: 1
+                  type: MostAllocated
+            plugins:
+              score:
+                enabled:
+                - name: NodeResourcesFit
+                  weight: 1
+            leaderElect: false
+            pluginApiVersion: kubescheduler.config.k8s.io/v1
+            pluginConfig:
+            - args:
+                scoringStrategy:
+                  resources:
+                  - name: cpu
+                    weight: 1
+                  - name: memory
+                    weight: 1
+                  type: MostAllocated
+              name: NodeResourcesFit
+        EOT
       }
     }
   }
