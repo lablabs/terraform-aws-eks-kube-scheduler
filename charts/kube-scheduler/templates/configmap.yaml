@@ -1,3 +1,4 @@
+{{- if and .Values.config.create }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,14 +10,5 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 data:
-  scheduler-config.yaml: |
-    apiVersion: {{ .Values.config.pluginApiVersion }}
-    kind: KubeSchedulerConfiguration
-    leaderElection:
-      leaderElect: {{ .Values.config.leaderElect }}
-      resourceName: {{ .Values.config.schedulerName }}
-      resourceNamespace: {{ include "custom-scheduler.namespace" . }}
-    profiles:
-    - schedulerName: {{ .Values.config.schedulerName }}
-      pluginConfig: {{ toYaml .Values.config.pluginConfig | nindent 6 }}
-      plugins: {{ toYaml .Values.config.plugins | nindent 8 }}
+  scheduler-config.yaml: |-
+{{ .Values.kubeSchedulerConfig | indent 4 }}

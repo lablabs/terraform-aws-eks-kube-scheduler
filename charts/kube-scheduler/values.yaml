@@ -19,9 +19,10 @@ replicaCount: 1
 serviceAccount:
   # Specify, whatever a service account should be created
   create: true
-  # Service account name, or use from variables, serviceAccountName
+  # Service account name
   name: ""
 
+# Dedicated pod related Annotations and Labels
 podAnnotations: {}
 podLabels: {}
 
@@ -34,11 +35,16 @@ securityContext: {}
    #   drop:
    #     - ALL
 
-resources: {}
+# Custom extra args (as key/value map)
+extraArgs: []
+  # - "--profiling=false"
+  # - "--bind-address=0.0.0.0"
+
+resources:
+ requests:
+   cpu: 100m
+   memory: 128Mi
 #  limits:
-#    cpu: 100m
-#    memory: 128Mi
-#  requests:
 #    cpu: 100m
 #    memory: 128Mi
 
@@ -46,27 +52,70 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
+# ConfigMap related section used by Kube-Scheduler deployment
 config:
-  schedulerName: custom-scheduler-mostallocated
-  leaderElect: false
-  pluginApiVersion: kubescheduler.config.k8s.io/v1
-  pluginConfig:
-  - args:
-      scoringStrategy:
-        resources:
-        - name: cpu
-          weight: 1
-        - name: memory
-          weight: 1
-        type: MostAllocated
-    name: NodeResourcesFit
-
-  plugins:
-    score:
-      enabled:
+  # Use create false if you want to use existing configMap
+  create: true
+  # Name of the new or existing ConfigMap
+  name: ""
+  schedulerName: custom-scheduler
+  kubeSchedulerConfig: |-
+    apiVersion: kubescheduler.config.k8s.io/v1
+    kind: KubeSchedulerConfiguration
+    leaderElection:
+      leaderElect: false
+      resourceName: custom-scheduler-mostallocated
+      resourceNamespace: kube-system
+    profiles:
+    - schedulerName: custom-scheduler-mostallocated
+      pluginConfig:
       - name: NodeResourcesFit
-        weight: 1
+        args:
+          scoringStrategy:
+            resources:
+            - name: cpu
+              weight: 1
+            - name: memory
+              weight: 1
+            type: MostAllocated
+      plugins:
+        score:
+          enabled:
+          - name: NodeResourcesFit
+            weight: 1
+      leaderElect: false
+      pluginApiVersion: kubescheduler.config.k8s.io/v1
+      pluginConfig:
+      - args:
+          scoringStrategy:
+            resources:
+            - name: cpu
+              weight: 1
+            - name: memory
+              weight: 1
+            type: MostAllocated
+        name: NodeResourcesFit
 
 rbac:
   create: true
   extraClusterRoleRules: []
+
+serviceMonitor:
+  # When set true then use a ServiceMonitor to configure scraping
+  enabled: false
+  # Set the namespace the ServiceMonitor should be deployed, if empty namespace will be .Release.Namespace
+  namespace: ""
+  # Service monitor labels
+  labels: {}
+  # Set how frequently Prometheus should scrape
+  interval: 30s
+  # Set path to metrics endpoint
+  path: /metrics
+  # Set timeout for scrape
+  timeout: 10s
+  # Set relabel_configs as per https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
+  relabelings: []
+  # Set metric_relabel_configs per https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs
+  metricRelabelings: []
+  # Set of labels to transfer on the Kubernetes Service onto the target.
+  targetLabels: []

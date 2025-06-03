@@ -22,7 +22,9 @@ locals {
   }
 
   addon_values = yamlencode({
-    nameOverride = local.addon.name
+    nameOverride      = local.addon.name
+    namespaceOverride = local.addon.namespace
+
     config = {
       schedulerName = local.addon.name
     }

@@ -45,9 +45,12 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           command:
           - /usr/local/bin/kube-scheduler
-          - --leader-elect={{ if gt .Values.replicaCount 1 }}true{{ else }}false{{ end }}
-          - --config=/etc/kubernetes/scheduler-config.yaml
-          - -v={{ .Values.logLevel }}
+          - "--leader-elect={{ if gt .Values.replicaCount 1 }}true{{ else }}false{{ end }}"
+          - "--config=/etc/kubernetes/scheduler-config.yaml"
+          - "-v={{ .Values.logLevel }}"
+          {{- range .Values.extraArgs }}
+          - {{ . | quote }}
+          {{- end }}
           volumeMounts:
             - name: scheduler-config
               mountPath: /etc/kubernetes/scheduler-config.yaml
