@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: helm-lint
         name: Helm Lint
-        entry: helm lint charts/kube-scheduler/Chart.yaml
+        entry: bash -c 'for chart in charts/*; do [ -f "$chart/Chart.yaml" ] && helm lint "$chart" || true; done'
         language: system
         types: [yaml]
         always_run: true
