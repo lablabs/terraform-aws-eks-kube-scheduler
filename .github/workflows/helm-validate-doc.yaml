@@ -63,6 +63,14 @@ jobs:
       - name: Install pip dependencies
         run: pip install -r requirements.txt
 
+      - name: Add helm-docs plugin
+        run: asdf plugin add helm-docs https://github.com/looztra/asdf-helm-docs.git
+
+      - name: Install helm-docs
+        run: |
+          asdf install helm-docs 1.13.1
+          asdf global helm-docs 1.13.1
+
       - name: Run pre-commit
         run: pre-commit run --show-diff-on-failure --color=always -c .pre-commit-config-helm.yaml
         env:
