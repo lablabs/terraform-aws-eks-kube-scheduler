@@ -51,7 +51,7 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           command:
           - /usr/local/bin/kube-scheduler
-          - "--leader-elect={{ if gt .Values.replicaCount 1 }}true{{ else }}false{{ end }}"
+          - "--leader-elect={{ if gt (int .Values.replicaCount) 1 }}true{{ else }}false{{ end }}"
           - "--config=/etc/kubernetes/scheduler-config.yaml"
           - "-v={{ .Values.logLevel }}"
           {{- range .Values.extraArgs }}

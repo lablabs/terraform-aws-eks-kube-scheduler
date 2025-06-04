@@ -1,0 +1,17 @@
+repos:
+  - repo: local
+    hooks:
+      - id: helm-lint
+        name: Helm Lint
+        entry: helm lint charts/kube-scheduler/Chart.yaml
+        language: system
+        types: [yaml]
+        always_run: true
+
+      - id: helm-docs
+        name: Generate Helm Chart README with helm-docs
+        entry: bash -c 'command -v helm-docs >/dev/null 2>&1 || { echo "helm-docs not installed. Install from https://github.com/norwoodj/helm-docs"; exit 1; }; helm-docs -c charts'
+        language: system
+        types: [yaml]
+        pass_filenames: false
+        always_run: true

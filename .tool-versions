@@ -5,3 +5,4 @@ checkov 3.2.352
 awscli 2.27.4
 pre-commit 4.2.0
 python 3.13.3
+helm 3.8.0
