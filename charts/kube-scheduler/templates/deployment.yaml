@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "custom-scheduler.fullname" . }}
+  namespace: {{ include "custom-scheduler.namespace" . }}
   labels:
     {{- include "custom-scheduler.labels" . | nindent 4 }}
     {{- with .Values.labels }}

@@ -10,7 +10,7 @@ logLevel: 3 # INFO, must be numeric as scheduler needs numeric value, 0-Fatal, 1
 
 image:
   repository: registry.k8s.io/kube-scheduler
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: ""
 
 replicaCount: 1

@@ -24,7 +24,7 @@ A Helm chart for Kubernetes custom scheduler
 | config.name | string | `"custom-scheduler"` |  |
 | extraArgs | list | `[]` |  |
 | fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"registry.k8s.io/kube-scheduler"` |  |
 | image.tag | string | `""` |  |
 | livenessProbe.httpGet.path | string | `"/healthz"` |  |
