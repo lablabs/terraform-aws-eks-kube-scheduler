@@ -10,3 +10,5 @@ addon-oidc.tf
 addon-irsa.tf
 variables-addon-oidc.tf
 variables-addon-irsa.tf
+.pre-commit-config.yaml
+.tool-versions

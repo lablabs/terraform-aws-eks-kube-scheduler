@@ -35,7 +35,8 @@ securityContext: {}
    #     - ALL
 
 # Custom extra args
-extraArgs: []
+extraArgs:
+  - "--authentication-skip-lookup=true"
   # - "--profiling=false"
   # - "--bind-address=0.0.0.0"
 
