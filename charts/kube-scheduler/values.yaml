@@ -28,7 +28,8 @@ podLabels: {}
 podSecurityContext: {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  privileged: false
    # runAsNonRoot: true
    # capabilities:
    #   drop:
