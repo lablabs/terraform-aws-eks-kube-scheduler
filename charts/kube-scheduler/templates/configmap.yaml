@@ -11,6 +11,5 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 data:
-  scheduler-config.yaml: |-
-    {{ .Values.kubeSchedulerConfig | toYaml | indent 4 }}
+  scheduler-config.yaml: {{ .Values.config.kubeSchedulerConfig | quote}}
 {{- end }}

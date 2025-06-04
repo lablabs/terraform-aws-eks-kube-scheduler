@@ -41,6 +41,10 @@ extraArgs:
   # - "--profiling=false"
   # - "--bind-address=0.0.0.0"
 
+podDisruptionBudget:
+  create: true
+  minAvailable: 1
+
 # Request created based on common value, possible to override
 resources:
  requests:
@@ -73,13 +77,22 @@ readinessProbe:
 nodeSelector: {}
 tolerations: []
 affinity: {}
-
+topologySpreadConstraints: []
+# Example usage:
+# topologySpreadConstraints:
+#   - maxSkew: 1
+#     topologyKey: "topology.kubernetes.io/zone"
+#     whenUnsatisfiable: "ScheduleAnyway"
+#     labelSelector:
+#       matchLabels:
+#         app: my-app
+#
 # ConfigMap related section used by Kube-Scheduler deployment
 config:
   # Use create false if you want to use existing configMap
   create: true
   # Name of the new or existing ConfigMap
-  name: custom-scheduler
+  name: "custom-scheduler"
   # A default scheduler config provided for testing below if needed
   kubeSchedulerConfig: ""
   # kubeSchedulerConfig: |-

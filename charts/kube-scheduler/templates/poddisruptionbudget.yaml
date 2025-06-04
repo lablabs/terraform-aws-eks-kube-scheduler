@@ -1,0 +1,13 @@
+{{- if .Values.podDisruptionBudget.create }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "custom-scheduler.fullname" . }}-pdb
+  labels:
+    {{- include "custom-scheduler.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "custom-scheduler.selectorLabels" . | nindent 6 }}
+{{- end }}
