@@ -3,7 +3,6 @@
 # Declare variables to be passed into your templates.
 nameOverride: ""
 fullnameOverride: ""
-
 namespaceOverride: ""
 
 revisionHistoryLimit: 10
@@ -35,11 +34,12 @@ securityContext: {}
    #   drop:
    #     - ALL
 
-# Custom extra args (as key/value map)
+# Custom extra args
 extraArgs: []
   # - "--profiling=false"
   # - "--bind-address=0.0.0.0"
 
+# Request created based on common value, possible to override
 resources:
  requests:
    cpu: 100m
@@ -77,43 +77,45 @@ config:
   # Use create false if you want to use existing configMap
   create: true
   # Name of the new or existing ConfigMap
-  schedulerName: custom-scheduler
-  kubeSchedulerConfig: |-
-    apiVersion: kubescheduler.config.k8s.io/v1
-    kind: KubeSchedulerConfiguration
-    leaderElection:
-      leaderElect: false
-      resourceName: custom-scheduler
-      resourceNamespace: kube-system
-    profiles:
-    - schedulerName: custom-scheduler
-      pluginConfig:
-      - name: NodeResourcesFit
-        args:
-          scoringStrategy:
-            resources:
-            - name: cpu
-              weight: 1
-            - name: memory
-              weight: 1
-            type: MostAllocated
-      plugins:
-        score:
-          enabled:
-          - name: NodeResourcesFit
-            weight: 1
-      leaderElect: false
-      pluginApiVersion: kubescheduler.config.k8s.io/v1
-      pluginConfig:
-      - args:
-          scoringStrategy:
-            resources:
-            - name: cpu
-              weight: 1
-            - name: memory
-              weight: 1
-            type: MostAllocated
-        name: NodeResourcesFit
+  name: custom-scheduler
+  # A default scheduler config provided for testing below if needed
+  kubeSchedulerConfig: ""
+  # kubeSchedulerConfig: |-
+  #   apiVersion: kubescheduler.config.k8s.io/v1
+  #   kind: KubeSchedulerConfiguration
+  #   leaderElection:
+  #     leaderElect: false
+  #     resourceName: custom-scheduler
+  #     resourceNamespace: kube-system
+  #   profiles:
+  #   - schedulerName: custom-scheduler
+  #     pluginConfig:
+  #     - name: NodeResourcesFit
+  #       args:
+  #         scoringStrategy:
+  #           resources:
+  #           - name: cpu
+  #             weight: 1
+  #           - name: memory
+  #             weight: 1
+  #           type: MostAllocated
+  #     plugins:
+  #       score:
+  #         enabled:
+  #         - name: NodeResourcesFit
+  #           weight: 1
+  #     leaderElect: false
+  #     pluginApiVersion: kubescheduler.config.k8s.io/v1
+  #     pluginConfig:
+  #     - args:
+  #         scoringStrategy:
+  #           resources:
+  #           - name: cpu
+  #             weight: 1
+  #           - name: memory
+  #             weight: 1
+  #           type: MostAllocated
+  #       name: NodeResourcesFit
 
 # Define if custom cluster role & cluster role binding is needed
 rbac:

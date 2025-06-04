@@ -1,0 +1,38 @@
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  helm-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Install helm-docs
+        run: |
+          wget https://github.com/norwoodj/helm-docs/releases/download/v1.13.1/helm-docs_1.13.1_Linux_x86_64.tar.gz
+          tar -xzf helm-docs_1.13.1_Linux_x86_64.tar.gz
+          sudo mv helm-docs /usr/local/bin/
+
+      - name: Generate README.md for Helm chart kube-scheduler
+        run: |
+          helm-docs -c charts/kube-scheduler
+
+      - name: Commit README.md if changed
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add charts/your-chart-name/README.md
+          git diff --staged --quiet || git commit -m "chore: update Helm chart README.md [auto]"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

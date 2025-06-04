@@ -17,9 +17,3 @@ variable "manifest_target_path" {
   default     = "charts/kube-scheduler"
   description = "Manifest target path in projects repository"
 }
-#
-# variable "kube_scheduler_ha_mode" {
-#   type        = bool
-#   default     = false
-#   description = "Configure kube-scheduler to deploy in HA mode"
-# }

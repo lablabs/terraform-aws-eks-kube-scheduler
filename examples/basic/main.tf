@@ -7,7 +7,7 @@ locals {
       image = {
         tag = "v1.30.13" # please review versions for kube-scheduler: https://github.com/kubernetes/kube-scheduler/tags?after=kubernetes-1.33.0
       }
-      replicaCount = 2 # HA Setup, it enables by default --leader-elect=true
+      replicaCount = 2 # HA Setup, it enables by default --leader-elect=true if replicaCount > 1
       resources = {
         requests = {
           cpu    = "100m"
@@ -17,6 +17,7 @@ locals {
       podLabels = {
         app = "KubeSchedulerPod"
       }
+      extraArgs = []
       securityContext = {
         runAsRoot = true
       }
@@ -26,8 +27,9 @@ locals {
       }
       # Config part is related to KubeSchedulerConfig values to create custom kube Scheduler
       config = {
-        create              = true
-        schedulerName       = "custom-kube-scheduler"
+        create = true
+        name   = "custom-kube-scheduler"
+        # Its possible to leverage tpl function to populate the string with custom values
         kubeSchedulerConfig = <<-EOT
           apiVersion: kubescheduler.config.k8s.io/v1
           kind: KubeSchedulerConfiguration

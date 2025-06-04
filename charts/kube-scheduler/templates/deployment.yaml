@@ -68,7 +68,7 @@ spec:
       volumes:
         - name: scheduler-config
           configMap:
-            name: {{ include "custom-scheduler.fullname" . }}
+            name: {{ include "custom-scheduler.configMapName" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

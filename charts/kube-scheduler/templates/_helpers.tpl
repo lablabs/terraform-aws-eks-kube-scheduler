@@ -49,6 +49,17 @@ Create the name of the service account
 {{- end }}
 {{- end }}
 
+{{/*
+Create the name of the config map
+*/}}
+{{- define "custom-scheduler.configMapName" -}}
+{{- if .Values.config.create }}
+{{- default (include "custom-scheduler.fullname" .) .Values.config.name }}
+{{- else }}
+{{- default "default" .Values.config.name }}
+{{- end }}
+{{- end }}
+
 
 {{/*
 Common labels
