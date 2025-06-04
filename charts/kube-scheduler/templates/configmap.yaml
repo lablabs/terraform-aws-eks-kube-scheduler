@@ -12,3 +12,4 @@ metadata:
 data:
   scheduler-config.yaml: |-
 {{ .Values.kubeSchedulerConfig | indent 4 }}
+{- end }}
