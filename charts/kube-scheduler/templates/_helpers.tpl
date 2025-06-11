@@ -67,7 +67,7 @@ helm.sh/chart: {{ include "kube-scheduler.chart" . }}
 app.kubernetes.io/version: {{ mustRegexReplaceAllLiteral "@sha.*" .Values.image.tag "" | default .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- with .Values.extraLabels }}
+{{- with .Values.commonLabels }}
 {{ toYaml . }}
 {{- end }}
 {{- end }}
