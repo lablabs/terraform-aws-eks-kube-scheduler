@@ -29,10 +29,10 @@ podSecurityContext: {}
 
 securityContext:
   privileged: false
-   # runAsNonRoot: true
-   # capabilities:
-   #   drop:
-   #     - ALL
+  runAsNonRoot: true
+  capabilities:
+    drop:
+      - ALL
 
 # Custom extra args
 extraArgs:
