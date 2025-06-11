@@ -21,7 +21,7 @@ A Helm chart for Kubernetes custom scheduler
 | affinity | object | `{}` |  |
 | config.create | bool | `true` |  |
 | config.kubeSchedulerConfig | string | `""` |  |
-| config.name | string | `"custom-scheduler"` |  |
+| config.name | string | `""` |  |
 | extraArgs[0] | string | `"--authentication-skip-lookup=true"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"Always"` |  |
@@ -32,7 +32,6 @@ A Helm chart for Kubernetes custom scheduler
 | livenessProbe.httpGet.scheme | string | `"HTTPS"` |  |
 | logLevel | int | `3` |  |
 | nameOverride | string | `""` |  |
-| namespaceOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
 | podAnnotations | object | `{}` |  |
 | podDisruptionBudget.create | bool | `true` |  |

@@ -3,7 +3,6 @@
 # Declare variables to be passed into your templates.
 nameOverride: ""
 fullnameOverride: ""
-namespaceOverride: ""
 
 revisionHistoryLimit: 10
 logLevel: 3 # INFO, must be numeric as scheduler needs numeric value, 0-Fatal, 1-Error, 2-Warn, 3-Info, 4-Debug, 5-Trace
@@ -93,7 +92,7 @@ config:
   # Use create false if you want to use existing configMap
   create: true
   # Name of the new or existing ConfigMap
-  name: "custom-scheduler"
+  name: ""
   # A default scheduler config provided for testing below if needed
   kubeSchedulerConfig: ""
   # kubeSchedulerConfig: |-
