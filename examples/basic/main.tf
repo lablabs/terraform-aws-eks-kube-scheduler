@@ -4,46 +4,70 @@ locals {
     namespace = "kube-system"
     version   = "1.0.0"
     values = {
-      schedulerName = "custom-scheduler"
-      replicaCount  = 2
+      image = {
+        tag = "v1.30.13" # please review versions for kube-scheduler: https://github.com/kubernetes/kube-scheduler/tags?after=kubernetes-1.33.0
+      }
+      replicaCount = 2 # HA Setup, it enables by default --leader-elect=true if replicaCount > 1
+      resources = {
+        requests = {
+          cpu    = "100m"
+          memory = "128Mi"
+        }
+      }
+      podLabels = {
+        app = "KubeSchedulerPod"
+      }
+      extraArgs = []
+      securityContext = {
+        runAsRoot = true
+      }
       serviceAccount = {
         create = true
         name   = "custom-kube-scheduler-sa"
       }
-      leaderElection = {
-        leaderElect   = true
-        leaseDuration = "15s"
-        renewDeadline = "10s"
-        retryPeriod   = "2s"
+      # Config part is related to KubeSchedulerConfig values to create custom kube Scheduler
+      config = {
+        create = true
+        name   = "custom-kube-scheduler"
+        # Its possible to leverage tpl function to populate the string with custom values
+        kubeSchedulerConfig = <<-EOT
+          apiVersion: kubescheduler.config.k8s.io/v1
+          kind: KubeSchedulerConfiguration
+          leaderElection:
+            leaderElect: false
+            resourceName: custom-scheduler
+            resourceNamespace: kube-system
+          profiles:
+          - schedulerName: custom-scheduler
+            pluginConfig:
+            - name: NodeResourcesFit
+              args:
+                scoringStrategy:
+                  resources:
+                  - name: cpu
+                    weight: 1
+                  - name: memory
+                    weight: 1
+                  type: MostAllocated
+            plugins:
+              score:
+                enabled:
+                - name: NodeResourcesFit
+                  weight: 1
+            leaderElect: false
+            pluginApiVersion: kubescheduler.config.k8s.io/v1
+            pluginConfig:
+            - args:
+                scoringStrategy:
+                  resources:
+                  - name: cpu
+                    weight: 1
+                  - name: memory
+                    weight: 1
+                  type: MostAllocated
+              name: NodeResourcesFit
+        EOT
       }
-      plugins = {
-        queueSort = {
-          enabled = ["PrioritySort"]
-        }
-        preFilter = {
-          enabled  = ["NodeResourcesFit"]
-          disabled = ["PodTopologySpread"]
-        }
-        filter = {
-          enabled  = ["NodeResourcesFit", "PodTopologySpread"]
-          disabled = []
-        }
-        score = {
-          enabled  = ["NodeResourcesFit", "PodTopologySpread"]
-          disabled = []
-        }
-      }
-      pluginConfig = [
-        {
-          name = "NodeResourcesFit"
-          args = {
-            ignoredResourceGroups = ["example.com"]
-            scoringStrategy = {
-              type = "MostAllocated"
-            }
-          }
-        }
-      ]
     }
   }
 }
@@ -52,9 +76,6 @@ module "addon_installation_disabled" {
   source = "../../"
 
   enabled = false
-
-  cluster_identity_oidc_issuer     = module.eks_cluster.eks_cluster_identity_oidc_issuer
-  cluster_identity_oidc_issuer_arn = module.eks_cluster.eks_cluster_identity_oidc_issuer_arn
 }
 
 module "addon_installation_helm" {
@@ -63,9 +84,6 @@ module "addon_installation_helm" {
   enabled           = true
   argo_enabled      = false
   argo_helm_enabled = false
-
-  cluster_identity_oidc_issuer     = module.eks_cluster.eks_cluster_identity_oidc_issuer
-  cluster_identity_oidc_issuer_arn = module.eks_cluster.eks_cluster_identity_oidc_issuer_arn
 
   values = yamlencode(local.kube_scheduler_helm.values)
 }
@@ -77,9 +95,6 @@ module "addon_installation_argo_kubernetes" {
   enabled           = true
   argo_enabled      = true
   argo_helm_enabled = false
-
-  cluster_identity_oidc_issuer     = module.eks_cluster.eks_cluster_identity_oidc_issuer
-  cluster_identity_oidc_issuer_arn = module.eks_cluster.eks_cluster_identity_oidc_issuer_arn
 
   values = yamlencode(local.kube_scheduler_helm.values)
 
@@ -95,9 +110,6 @@ module "addon_installation_argo_helm" {
   enabled           = true
   argo_enabled      = true
   argo_helm_enabled = true
-
-  cluster_identity_oidc_issuer     = module.eks_cluster.eks_cluster_identity_oidc_issuer
-  cluster_identity_oidc_issuer_arn = module.eks_cluster.eks_cluster_identity_oidc_issuer_arn
 
   values = yamlencode(local.kube_scheduler_helm.values)
 

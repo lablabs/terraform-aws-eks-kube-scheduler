@@ -1,0 +1,160 @@
+# Default values for aws-service-quotas-exporter.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+nameOverride: ""
+fullnameOverride: ""
+
+revisionHistoryLimit: 10
+logLevel: 3 # INFO, must be numeric as scheduler needs numeric value, 0-Fatal, 1-Error, 2-Warn, 3-Info, 4-Debug, 5-Trace
+
+image:
+  repository: registry.k8s.io/kube-scheduler
+  pullPolicy: Always
+  tag: ""
+
+replicaCount: 1
+
+serviceAccount:
+  # Specify, whatever a service account should be created
+  create: true
+  # Service account name
+  name: ""
+
+# Dedicated pod related Annotations and Labels
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  privileged: false
+  runAsNonRoot: true
+  capabilities:
+    drop:
+      - ALL
+
+# Custom extra args
+extraArgs:
+  - "--authentication-skip-lookup=true"
+  # - "--profiling=false"
+  # - "--bind-address=0.0.0.0"
+
+podDisruptionBudget:
+  create: true
+  minAvailable: 1
+  # maxUnavailable: 1
+
+# Request created based on common value, possible to override
+resources:
+ requests:
+   cpu: 100m
+   memory: 128Mi
+#  limits:
+#    cpu: 100m
+#    memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 10259
+    scheme: HTTPS  # Use HTTPS if you have TLS enabled, HTTP otherwise
+  # initialDelaySeconds: 10
+  # timeoutSeconds: 15
+  # failureThreshold: 8
+  # periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: 10259
+    scheme: HTTPS  # Use HTTPS if scheduler uses TLS, otherwise HTTP
+  # initialDelaySeconds: 5
+  # timeoutSeconds: 5
+  # periodSeconds: 10
+  # failureThreshold: 3
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+# Affinity support tpl variables too, see for example: topologySpreadConstraints
+
+topologySpreadConstraints: []
+# Example usage, supports tpl too
+# topologySpreadConstraints:
+#   - maxSkew: 1
+#     topologyKey: "topology.kubernetes.io/zone"
+#     whenUnsatisfiable: "ScheduleAnyway"
+#     labelSelector:
+#       matchLabels:
+#         app: "{{ .Values.appLabel }}"
+
+# ConfigMap related section used by Kube-Scheduler deployment
+config:
+  # Use create false if you want to use existing configMap
+  create: true
+  # Name of the new or existing ConfigMap
+  name: ""
+  # A default scheduler config provided for testing below if needed
+  kubeSchedulerConfig: ""
+  # kubeSchedulerConfig: |-
+  #   apiVersion: kubescheduler.config.k8s.io/v1
+  #   kind: KubeSchedulerConfiguration
+  #   leaderElection:
+  #     leaderElect: false
+  #     resourceName: custom-scheduler
+  #     resourceNamespace: kube-system
+  #   profiles:
+  #   - schedulerName: custom-scheduler
+  #     pluginConfig:
+  #     - name: NodeResourcesFit
+  #       args:
+  #         scoringStrategy:
+  #           resources:
+  #           - name: cpu
+  #             weight: 1
+  #           - name: memory
+  #             weight: 1
+  #           type: MostAllocated
+  #     plugins:
+  #       score:
+  #         enabled:
+  #         - name: NodeResourcesFit
+  #           weight: 1
+  #     leaderElect: false
+  #     pluginApiVersion: kubescheduler.config.k8s.io/v1
+  #     pluginConfig:
+  #     - args:
+  #         scoringStrategy:
+  #           resources:
+  #           - name: cpu
+  #             weight: 1
+  #           - name: memory
+  #             weight: 1
+  #           type: MostAllocated
+  #       name: NodeResourcesFit
+
+# Define if custom cluster role & cluster role binding is needed
+rbac:
+  create: true
+  extraClusterRoleRules: []
+
+serviceMonitor:
+  # When set true then use a ServiceMonitor to configure scraping
+  enabled: false
+  # Set the namespace the ServiceMonitor should be deployed, if empty namespace will be .Release.Namespace
+  namespace: ""
+  # Service monitor labels
+  labels: {}
+  # Set how frequently Prometheus should scrape
+  interval: 30s
+  # Set path to metrics endpoint
+  path: /metrics
+  # Set timeout for scrape
+  timeout: 10s
+  # Set relabel_configs as per https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config
+  relabelings: []
+  # Set metric_relabel_configs per https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs
+  metricRelabelings: []
+  # Set of labels to transfer on the Kubernetes Service onto the target.
+  targetLabels: []

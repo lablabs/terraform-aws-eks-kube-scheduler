@@ -1,0 +1,18 @@
+{{- if and .Values.podDisruptionBudget.create (or .Values.podDisruptionBudget.minAvailable .Values.podDisruptionBudget.maxUnavailable) }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "kube-scheduler.fullname" . }}-pdb
+  labels:
+    {{- include "kube-scheduler.labels" . | nindent 4 }}
+spec:
+  {{ with .Values.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ . }}
+  {{ end }}
+  {{ with .Values.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{ end }}
+  selector:
+    matchLabels:
+      {{- include "kube-scheduler.selectorLabels" . | nindent 6 }}
+{{- end }}

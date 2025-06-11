@@ -1,12 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "custom-scheduler.fullname" . }}
+  name: {{ include "kube-scheduler.fullname" . }}
+  namespace: {{ include "kube-scheduler.namespace" . }}
   labels:
-    {{- include "custom-scheduler.labels" . | nindent 4 }}
-    {{- with .Values.labels }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
+    {{- include "kube-scheduler.labels" . | nindent 4 }}
   {{- with .Values.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -16,7 +14,7 @@ spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
-      {{- include "custom-scheduler.selectorLabels" . | nindent 6 }}
+      {{- include "kube-scheduler.selectorLabels" . | nindent 6 }}
   {{- with .Values.deploymentStrategy }}
   strategy:
     {{- toYaml . | trim | nindent 4 }}
@@ -24,7 +22,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "custom-scheduler.selectorLabels" . | nindent 8 }}
+        {{- include "kube-scheduler.selectorLabels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -34,15 +32,30 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ include "custom-scheduler.serviceAccountName" . }}
+      serviceAccountName: {{ include "kube-scheduler.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints: {{ tpl (toYaml .Values.topologySpreadConstraints) $ | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "v%s" .Chart.AppVersion) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
           command:
           - /usr/local/bin/kube-scheduler
-          - --config=/etc/kubernetes/scheduler-config.yaml
-          - -v={{ .Values.logLevel }}
+          - "--leader-elect={{ if gt (int .Values.replicaCount) 1 }}true{{ else }}false{{ end }}"
+          - "--config=/etc/kubernetes/scheduler-config.yaml"
+          - "-v={{ .Values.logLevel }}"
+          {{- range .Values.extraArgs }}
+          - {{ . | quote }}
+          {{- end }}
           volumeMounts:
             - name: scheduler-config
               mountPath: /etc/kubernetes/scheduler-config.yaml
@@ -54,7 +67,7 @@ spec:
       volumes:
         - name: scheduler-config
           configMap:
-            name: {{ include "custom-scheduler.fullname" . }}
+            name: {{ include "kube-scheduler.configMapName" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -65,5 +78,5 @@ spec:
       {{- end }}
       {{- with .Values.affinity }}
       affinity:
-        {{ toYaml .Values.affinity | nindent 8 }}
+        {{ tpl (toYaml .Values.affinity) $ | nindent 8 }}
       {{- end }}
