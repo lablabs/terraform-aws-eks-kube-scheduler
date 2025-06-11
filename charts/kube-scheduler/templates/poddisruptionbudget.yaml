@@ -2,12 +2,12 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "custom-scheduler.fullname" . }}-pdb
+  name: {{ include "kube-scheduler.fullname" . }}-pdb
   labels:
-    {{- include "custom-scheduler.labels" . | nindent 4 }}
+    {{- include "kube-scheduler.labels" . | nindent 4 }}
 spec:
   minAvailable: {{ .Values.podDisruptionBudget.minAvailable | default 1 }}
   selector:
     matchLabels:
-      {{- include "custom-scheduler.selectorLabels" . | nindent 6 }}
+      {{- include "kube-scheduler.selectorLabels" . | nindent 6 }}
 {{- end }}

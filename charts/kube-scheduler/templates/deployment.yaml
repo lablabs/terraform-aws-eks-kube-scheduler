@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "custom-scheduler.fullname" . }}
-  namespace: {{ include "custom-scheduler.namespace" . }}
+  name: {{ include "kube-scheduler.fullname" . }}
+  namespace: {{ include "kube-scheduler.namespace" . }}
   labels:
-    {{- include "custom-scheduler.labels" . | nindent 4 }}
+    {{- include "kube-scheduler.labels" . | nindent 4 }}
     {{- with .Values.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -17,7 +17,7 @@ spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
-      {{- include "custom-scheduler.selectorLabels" . | nindent 6 }}
+      {{- include "kube-scheduler.selectorLabels" . | nindent 6 }}
   {{- with .Values.deploymentStrategy }}
   strategy:
     {{- toYaml . | trim | nindent 4 }}
@@ -25,7 +25,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "custom-scheduler.selectorLabels" . | nindent 8 }}
+        {{- include "kube-scheduler.selectorLabels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -35,7 +35,7 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ include "custom-scheduler.serviceAccountName" . }}
+      serviceAccountName: {{ include "kube-scheduler.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- with .Values.topologySpreadConstraints }}
@@ -71,7 +71,7 @@ spec:
       volumes:
         - name: scheduler-config
           configMap:
-            name: {{ include "custom-scheduler.configMapName" . }}
+            name: {{ include "kube-scheduler.configMapName" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

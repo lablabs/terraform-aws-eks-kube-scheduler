@@ -2,23 +2,23 @@
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "custom-scheduler.fullname" . }}
+  name: {{ include "kube-scheduler.fullname" . }}
   labels:
-    {{- include "custom-scheduler.labels" . | nindent 4 }}
+    {{- include "kube-scheduler.labels" . | nindent 4 }}
   {{- with .Values.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 subjects:
   - kind: ServiceAccount
-    name: {{ include "custom-scheduler.serviceAccountName" . }}
-    namespace: {{ include "custom-scheduler.namespace" . }}
+    name: {{ include "kube-scheduler.serviceAccountName" . }}
+    namespace: {{ include "kube-scheduler.namespace" . }}
 roleRef:
   kind: ClusterRole
   {{- if .Values.rbac.useExistingClusterRole }}
   name: {{ .Values.rbac.useExistingClusterRole }}
   {{- else }}
-  name: {{ include "custom-scheduler.fullname" . }}
+  name: {{ include "kube-scheduler.fullname" . }}
   {{- end }}
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
