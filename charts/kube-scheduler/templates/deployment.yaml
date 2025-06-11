@@ -35,9 +35,8 @@ spec:
       serviceAccountName: {{ include "kube-scheduler.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- with .Values.topologySpreadConstraints }}
-      topologySpreadConstraints:
-        {{- toYaml . | nindent 8 }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints: {{ tpl (toYaml .Values.topologySpreadConstraints) $ | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -79,5 +78,5 @@ spec:
       {{- end }}
       {{- with .Values.affinity }}
       affinity:
-        {{ toYaml .Values.affinity | nindent 8 }}
+        {{ tpl (toYaml .Values.affinity) $ | nindent 8 }}
       {{- end }}
