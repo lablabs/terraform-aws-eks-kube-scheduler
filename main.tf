@@ -12,13 +12,12 @@ locals {
     name      = "kube-scheduler"
     namespace = "kube-system"
 
-    helm_chart_name    = "kubernetes-scheduler"
-    helm_chart_version = var.manifest_target_revision
-    helm_repo_url      = "https://github.com/lablabs/terraform-aws-eks-kube-scheduler"
-    argo_enabled       = true
-    argo_source_type   = "helm-directory"
-    argo_source_path   = var.manifest_target_path
-    argo_helm_enabled  = true
+    helm_chart_name   = "kubernetes-scheduler"
+    helm_repo_url     = "https://github.com/lablabs/terraform-aws-eks-kube-scheduler"
+    argo_enabled      = true
+    argo_source_type  = "helm-directory"
+    argo_source_path  = var.manifest_target_path
+    argo_helm_enabled = true
   }
 
   addon_values = yamlencode({

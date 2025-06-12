@@ -125,7 +125,6 @@ See [basic example](examples/basic) for further information.
 | <a name="input_helm_wait"></a> [helm\_wait](#input\_helm\_wait) | Will wait until all Helm release resources are in a ready state before marking the release as successful. It will wait for as long as timeout. Defaults to `false`. | `bool` |
 | <a name="input_helm_wait_for_jobs"></a> [helm\_wait\_for\_jobs](#input\_helm\_wait\_for\_jobs) | If wait is enabled, will wait until all Helm Jobs have been completed before marking the release as successful. It will wait for as long as timeout. Defaults to `false`. | `bool` |
 | <a name="input_manifest_target_path"></a> [manifest\_target\_path](#input\_manifest\_target\_path) | Manifest target path in projects repository | `string` |
-| <a name="input_manifest_target_revision"></a> [manifest\_target\_revision](#input\_manifest\_target\_revision) | Manifest target revision to deploy from | `string` |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | The Kubernetes Namespace in which the Helm chart will be installed (required). | `string` |
 | <a name="input_settings"></a> [settings](#input\_settings) | Additional Helm sets which will be passed to the Helm chart values or Kustomize or directory configuration which will be passed to ArgoCD Application source. Defaults to `{}`. | `map(any)` |
 | <a name="input_values"></a> [values](#input\_values) | Additional YAML encoded values which will be passed to the Helm chart. Defaults to `""`. | `string` |
