@@ -1,3 +1,6 @@
+{{- $imageName := .Values.name | required ".Values.name is required." -}}
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -40,7 +43,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "v%s" .Chart.AppVersion) }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag | required ".Values.image.tag is required to be set properly" }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
