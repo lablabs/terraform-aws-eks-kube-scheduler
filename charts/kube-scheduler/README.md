@@ -38,6 +38,7 @@ A Helm chart for Kubernetes custom scheduler
 | podDisruptionBudget.minAvailable | int | `1` |  |
 | podLabels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
+| priorityClassName | string | `""` |  |
 | rbac.create | bool | `true` |  |
 | rbac.extraClusterRoleRules | list | `[]` |  |
 | readinessProbe.httpGet.path | string | `"/healthz"` |  |
