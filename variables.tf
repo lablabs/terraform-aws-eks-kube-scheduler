@@ -8,7 +8,7 @@ variable "enabled" {
 
 variable "manifest_target_revision" {
   type        = string
-  default     = "0.3.0"
+  default     = "0.1.0"
   description = "Manifest target revision to deploy from"
 }
 
