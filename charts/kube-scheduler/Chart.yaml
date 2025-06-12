@@ -1,7 +1,7 @@
 apiVersion: v2
 name: kube-scheduler
 description: A Helm chart for Kubernetes custom scheduler
-version: 0.3.0
+version: 0.1.0
 keywords:
 - k8s
 - kubernetes

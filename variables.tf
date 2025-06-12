@@ -6,12 +6,6 @@ variable "enabled" {
   nullable    = false
 }
 
-variable "manifest_target_revision" {
-  type        = string
-  default     = "0.3.0"
-  description = "Manifest target revision to deploy from"
-}
-
 variable "manifest_target_path" {
   type        = string
   default     = "charts/kube-scheduler"
